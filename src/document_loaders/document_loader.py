@@ -35,4 +35,4 @@ def load_pdf_file(pdf_path: str):
 
 if __name__ == "__main__":
     #load_text_file()
-    load_pdf_file("src/documents/001-HIDE-AND-SEEK-Free-Childrens-Book-By-Monkey-Pen.pdf")
+    load_pdf_file("src/document_loaders/documents/001-HIDE-AND-SEEK-Free-Childrens-Book-By-Monkey-Pen.pdf")
