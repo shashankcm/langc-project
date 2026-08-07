@@ -62,14 +62,15 @@ def chroma_basics():
     for i, result in enumerate(results):
         print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']})")
 
-"""
-    Performs a similarity search with scores on the sample documents.
-    Note: here the scores actually represent the distance from the query vector to the document vector.
-    not similarity score. To get the similarity score we need to use below formula:
-    similarity = 1 - (distance / max_distance)
 
-"""
 def similarity_search_with_scores():
+    """
+        Performs a similarity search with scores on the sample documents.
+        Note: here the scores actually represent the distance from the query vector to the document vector.
+        not similarity score. To get the similarity score we need to use below formula:
+        similarity = 1 - (distance / max_distance)
+
+    """
     with tempfile.TemporaryDirectory() as temp_dir:
         vectorstore = Chroma.from_documents(
             documents=SAMPLE_DOCS,
@@ -85,6 +86,30 @@ def similarity_search_with_scores():
             print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']}) - Score: {score}")
 
 
+def metadata_filtering():
+    """
+        Performs a metadata filtering search on the sample documents.
+    """
+    with tempfile.TemporaryDirectory() as temp_dir:
+        vectorstore = Chroma.from_documents(
+            documents=SAMPLE_DOCS,
+            persist_directory=temp_dir,
+            embedding=embeddings_model
+        )
+
+        query = "What databases are available?"
+        results_without_filtering = vectorstore.similarity_search(query, k=3)
+        print(f"Top 3 results without filtering for given query '{query}':")
+        for i, result in enumerate(results_without_filtering):
+            print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']})")
+
+        results = vectorstore.similarity_search_with_score(query, k=3, filter={"topic": "database"})
+        print(f"Top 3 results with scores for given query '{query}':")
+        for i, (result, score) in enumerate(results):
+            print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']}) - Score: {score}")
+
+
 if __name__ == "__main__":
     #chroma_basics()
-    similarity_search_with_scores()
+    #similarity_search_with_scores()
+    metadata_filtering()
