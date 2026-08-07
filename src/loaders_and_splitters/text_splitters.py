@@ -3,15 +3,15 @@ Text Splitters and Chunking Strategies
 Optimizing document chunking for Retrieval-Augmented Generation (RAG)
 """
 
-from langchain_text_splitters import (
-    RecursiveCharacterTextSplitter,
-    CharacterTextSplitter,
-    TokenTextSplitter,
-    MarkdownHeaderTextSplitter,
-    Language
-)
-from langchain_core.documents import Document
 from dotenv import load_dotenv
+from langchain_core.documents import Document
+from langchain_text_splitters import (
+    CharacterTextSplitter,
+    Language,
+    MarkdownHeaderTextSplitter,
+    RecursiveCharacterTextSplitter,
+    TokenTextSplitter,
+)
 
 load_dotenv()
 
@@ -85,11 +85,10 @@ def binary_search(arr, target):
     return -1
 '''
 
+
 def recursive_text_splitter(text: str):  # -> list[Document]:
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50,
-        separators=["\n", "\n\n", " ", ""]
+        chunk_size=500, chunk_overlap=50, separators=["\n", "\n\n", " ", ""]
     )
     chunks = splitter.split_text(text)
 
@@ -99,20 +98,16 @@ def recursive_text_splitter(text: str):  # -> list[Document]:
     print(f"Chunk sizes: {[len(chunk) for chunk in chunks]}")
     print(f"\nFirst chunk preview: \n{chunks[0][:200]}...")
 
-    #return [Document(page_content=chunk) for chunk in chunks]
+    # return [Document(page_content=chunk) for chunk in chunks]
 
 
 def overlap_importance():
     text = "The quick brown fox jumps over the lazy dog. " * 10
     no_overlap = RecursiveCharacterTextSplitter(
-        chunk_size=50,
-        chunk_overlap=0,
-        separators=["\n", "\n\n", " ", ""]
+        chunk_size=50, chunk_overlap=0, separators=["\n", "\n\n", " ", ""]
     )
     with_overlap = RecursiveCharacterTextSplitter(
-        chunk_size=50,
-        chunk_overlap=20,
-        separators=["\n", "\n\n", " ", ""]
+        chunk_size=50, chunk_overlap=20, separators=["\n", "\n\n", " ", ""]
     )
     no_overlap_chunks = no_overlap.split_text(text)
     with_overlap_chunks = with_overlap.split_text(text)
@@ -138,8 +133,7 @@ def chunk_size_comparison():
         print(f" Size {size}: {len(chunks)} chunks")
 
 
-
 if __name__ == "__main__":
-    #recursive_text_splitter(SAMPLE_TEXT)
-    #overlap_importance()
+    # recursive_text_splitter(SAMPLE_TEXT)
+    # overlap_importance()
     chunk_size_comparison()

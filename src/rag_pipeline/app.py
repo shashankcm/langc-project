@@ -1,24 +1,23 @@
 """
 Complete implementation of Building RAG Pipeline.
 """
+
 import queue
+import tempfile
+from typing import List
+
+from dotenv import load_dotenv
 from httpcore import stream
-from numpy.linalg import vector_norm
-
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough, RunnableParallel
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chat_models import init_chat_model
-
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from numpy.linalg import vector_norm
 from pydantic import BaseModel, Field
-from typing import List
-from dotenv import load_dotenv
-
-import tempfile
 
 load_dotenv()
 
@@ -65,7 +64,8 @@ def create_kb():
 
     # split the knowledge base into chunks
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    doc = Document(page_content=KNOWLEDGE_BASE,
+    doc = Document(
+        page_content=KNOWLEDGE_BASE,
         metadata={"source": "langchain_knowledge_base.md"},
     )
     chunks = text_splitter.split_documents([doc])
@@ -75,17 +75,17 @@ def create_kb():
     vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=embedding_model,
-        persist_directory=tempfile.mkdtemp())
+        persist_directory=tempfile.mkdtemp(),
+    )
 
     # persist the vector store to disk
-    #vectorstore.persist()
+    # vectorstore.persist()
     #
     # return the vector store
     return vectorstore
 
 
 def demo_basic_rag():
-
     # create the vector store from the knowledge base
     vector_store = create_kb()
 
@@ -96,11 +96,7 @@ def demo_basic_rag():
     )
 
     # initialize the llm
-    llm = init_chat_model(
-        model="gpt-4o-mini",
-        model_provider="openai",
-        temperature=0.7
-    )
+    llm = init_chat_model(model="gpt-4o-mini", model_provider="openai", temperature=0.7)
 
     # RAG Prompt Template
     prompt = ChatPromptTemplate.from_template("""
