@@ -1,6 +1,9 @@
 """
 Complete implementation of Building RAG Pipeline.
 """
+import queue
+from httpcore import stream
+from numpy.linalg import vector_norm
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableParallel
@@ -79,3 +82,75 @@ def create_kb():
     #
     # return the vector store
     return vectorstore
+
+
+def demo_basic_rag():
+
+    # create the vector store from the knowledge base
+    vector_store = create_kb()
+
+    # create the retriever from the vector store
+    retriever = vector_store.as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": 2},
+    )
+
+    # initialize the llm
+    llm = init_chat_model(
+        model="gpt-4o-mini",
+        model_provider="openai",
+        temperature=0.7
+    )
+
+    # RAG Prompt Template
+    prompt = ChatPromptTemplate.from_template("""
+        You are a helpful assistant that answers questions about LangChain.
+        Answer the question based only on the following context:
+        {context}
+        Question:
+            {question}
+        Answer:
+
+        Make sure to answer in a concise manner, and if you don't know the answer, say "I don't know".
+    """)
+
+    # Format the retrieved documents
+
+    def format_docs(docs):
+        return "\n\n".join(doc.page_content for doc in docs)
+
+    # create the RAG chain
+    """
+    [User Question String]
+             │
+             ├───► Passed to RunnablePassthrough() ──────────────────────────► "question"
+             │                                                                     │
+             └───► Passed to Retriever ──► [Docs] ──► Passed to format_docs ──► "context"
+                                                                                   │
+     ┌─────────────────────────────────────────────────────────────────────────────┘
+     │
+     ▼
+    [Dictionary Input] ──► Prompt Template ──► [Formatted Prompt] ──► LLM ──► [Raw LLM Object] ──► StrOutputParser() ──► [Final Answer String]
+    """
+    rag_chain = (
+        {"context": retriever | format_docs, "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    # invoke the RAG chain
+
+    # invoke the RAG chain with a sample question
+    questions = [
+        "What is LangChain?",
+        "Who created LangChain?",
+        "What is LangGraph used for?",
+    ]
+    for question in questions:
+        answer = rag_chain.invoke(question)
+        print(f"Question: {question}\nAnswer: {answer}\n")
+
+
+if __name__ == "__main__":
+    demo_basic_rag()
