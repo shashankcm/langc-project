@@ -62,5 +62,23 @@ def chroma_basics():
     for i, result in enumerate(results):
         print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']})")
 
+
+def similarity_search_with_scores():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        vectorstore = Chroma.from_documents(
+            documents=SAMPLE_DOCS,
+            persist_directory=temp_dir,
+            embedding=embeddings_model
+        )
+
+        query = "What is a vector store?"
+
+        results = vectorstore.similarity_search_with_score(query, k=3)
+        print(f"Top 3 results with scores for given query '{query}':")
+        for i, (result, score) in enumerate(results):
+            print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']}) - Score: {score}")
+
+
 if __name__ == "__main__":
-    chroma_basics()
+    #chroma_basics()
+    similarity_search_with_scores()
