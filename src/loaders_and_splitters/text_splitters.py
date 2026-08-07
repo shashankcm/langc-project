@@ -101,5 +101,45 @@ def recursive_text_splitter(text: str):  # -> list[Document]:
 
     #return [Document(page_content=chunk) for chunk in chunks]
 
+
+def overlap_importance():
+    text = "The quick brown fox jumps over the lazy dog. " * 10
+    no_overlap = RecursiveCharacterTextSplitter(
+        chunk_size=50,
+        chunk_overlap=0,
+        separators=["\n", "\n\n", " ", ""]
+    )
+    with_overlap = RecursiveCharacterTextSplitter(
+        chunk_size=50,
+        chunk_overlap=20,
+        separators=["\n", "\n\n", " ", ""]
+    )
+    no_overlap_chunks = no_overlap.split_text(text)
+    with_overlap_chunks = with_overlap.split_text(text)
+
+    print(f"\nNo overlap chunks: {len(no_overlap_chunks)}")
+    print(f"\nChunk 1 end: \n{no_overlap_chunks[0][-20:]}...")
+    print(f"\nChunk 1 start: \n{no_overlap_chunks[1][:20]}...")
+
+    print(f"\nWith overlap chunks: {len(with_overlap_chunks)}")
+    print(f"\nChunk 1 end: \n{with_overlap_chunks[0][-20:]}...")
+    print(f"\nChunk 1 start: \n{with_overlap_chunks[1][:20]}...")
+
+
+def chunk_size_comparison():
+    sizes = [200, 500, 1000]
+
+    print("=== Chunk Size Comparison ===")
+    for size in sizes:
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=size, chunk_overlap=size // 5
+        )  # 20% overlap
+        chunks = splitter.split_text(SAMPLE_TEXT)
+        print(f" Size {size}: {len(chunks)} chunks")
+
+
+
 if __name__ == "__main__":
-    recursive_text_splitter(SAMPLE_TEXT)
+    #recursive_text_splitter(SAMPLE_TEXT)
+    #overlap_importance()
+    chunk_size_comparison()
