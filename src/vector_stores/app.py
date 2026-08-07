@@ -62,7 +62,13 @@ def chroma_basics():
     for i, result in enumerate(results):
         print(f"Result {i + 1}: {result.page_content} (Source: {result.metadata['source']})")
 
+"""
+    Performs a similarity search with scores on the sample documents.
+    Note: here the scores actually represent the distance from the query vector to the document vector.
+    not similarity score. To get the similarity score we need to use below formula:
+    similarity = 1 - (distance / max_distance)
 
+"""
 def similarity_search_with_scores():
     with tempfile.TemporaryDirectory() as temp_dir:
         vectorstore = Chroma.from_documents(
