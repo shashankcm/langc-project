@@ -98,6 +98,13 @@ def print_chunks(chunks, method_name):
         print(f"  topic boundaries, keeping related content together.\n")
 
 
+def test_retrieval(query, vectorstore, name):
+    results = vectorstore.similarity_search(query, k=1)
+    print(f'\n{name} - Query: "{query}"')
+    print(f"\nRetrieved: {results[0].page_content[:150]}...")
+    return results[0].page_content
+
+
 # Step 1: Recursive chunking
 
 recursive_splitter = RecursiveCharacterTextSplitter(
@@ -121,3 +128,35 @@ semantic_chunks = semantic_splitter.split_text(document)
 
 print_chunks(recursive_chunks, "RECURSIVE CHUNKING (fixed-size, 400 chars)")
 print_chunks(semantic_chunks, "SEMANTIC CHUNKING (meaning-based splits)")
+
+
+# Step 3: Retrival Quality
+
+## Create 2 Vector Stores for each chunking method
+
+recursive_vector_store = Chroma.from_texts(
+    recursive_chunks, embedding_model, collection_name="recursive_chunks"
+)
+semantic_vector_store = Chroma.from_texts(
+    semantic_chunks, embedding_model, collection_name="semantic_chunks"
+)
+
+# Step 4: Test retrieval quality
+
+test_queries = [
+    "How do I authenticate with OAuth2?",
+    "What happens when I hit the rate limit?",
+    "How are webhooks secured?",
+    "What format are errors returned in?",
+]
+
+# Step 5: Run retrieval tests
+
+print(f"\n{'=' * 60}")
+print("  RETRIEVAL TESTS")
+print(f"{'=' * 60}")
+
+for query in test_queries:
+    print("=" * 60)
+    recursive_result = test_retrieval(query, recursive_vector_store, "RECURSIVE")
+    semantic_result = test_retrieval(query, semantic_vector_store, "SEMANTIC")
