@@ -1,26 +1,40 @@
+"""
+Advanced RAG patterns
+Multi-query, self-query, compression, hybrid search
+"""
+
+import logging
+
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_classic.retrievers import (
     ContextualCompressionRetriever,
+    EnsembleRetriever,
     ParentDocumentRetriever,
 )
-from langchain_classic.retrievers.document_compressors import (
-    LLMChainExtractor,
-)
+from langchain_classic.retrievers.document_compressors import LLMChainExtractor
+from langchain_classic.retrievers.multi_query import MultiQueryRetriever
 from langchain_classic.storage import InMemoryStore
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai.chat_models.base import ChatOpenAI
+from langchain_community.retrievers import BM25Retriever
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from .sample_docs import INFO_BURIED, TECH_DOCS, long_doc
 
 load_dotenv()
 
+# Enable logging to see multi-query generation
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(message)s")
+logging.getLogger("langchain.retrievers.multi_query").setLevel(logging.INFO)
+
 
 def create_base_vectorstore():
     """Creates and returns a base vector store using Chroma and OpenAI embeddings."""
     vectorstore = Chroma.from_documents(
-        documents=INFO_BURIED,
+        documents=TECH_DOCS,
         embedding=OpenAIEmbeddings(model="text-embedding-3-small"),
     )
     return vectorstore
@@ -124,6 +138,40 @@ def demo_contextual_compression():
         print(f"Content preview: {doc.page_content[:150]}...")
 
 
+def demo_multi_query_retriever():
+    """Demonstrates the multi-query retriever."""
+
+    print("=" * 80)
+    print("MULTI-QUERY RETRIEVER")
+    print("Generating multiple perspectives for the given query")
+    print("=" * 80)
+
+    # Vector store, LLM and retriever
+    vectorstore = create_base_vectorstore()
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+
+    # Create multi-query retriever
+    multi_query_retriever = MultiQueryRetriever.from_llm(
+        retriever=retriever,
+        llm=llm,
+    )
+
+    # Query
+    query = "What tools can I use to build LLM applications?"
+    print(f"\n--- Original Query --- {query}")
+
+    # Get results
+    print(f"\n The retriever is generating multiple queries...")
+
+    docs = multi_query_retriever.invoke(query)
+    print(f"\n--- Multi-Query Retriever Results ---")
+    for i, doc in enumerate(docs):
+        print(f"\n{i + 1}. [{doc.metadata.get('topic', 'N/A')}]")
+        print(f"Content: {doc.page_content}")
+
+
 if __name__ == "__main__":
     # demo_parent_document_retriver()
-    demo_contextual_compression()
+    # demo_contextual_compression()
+    demo_multi_query_retriever()
