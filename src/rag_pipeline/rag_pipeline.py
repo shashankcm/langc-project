@@ -12,7 +12,7 @@ from langchain.chat_models import init_chat_model
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, prompt
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -57,6 +57,16 @@ Create your first chain in under 10 lines of code.
 """
 
 embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
+# initialize the llm
+llm = init_chat_model(model="gpt-4o-mini", model_provider="openai", temperature=0.7)
+
+
+def format_docs_with_sources(docs):
+    formatted_docs = []
+    for i, doc in enumerate(docs):
+        source = doc.metadata.get("source", "Unknown")
+        formatted_docs.append(f"[{i + 1}] {source}: \n{doc.page_content}")
+    return "\n\n".join(formatted_docs)
 
 
 def create_kb():
@@ -94,9 +104,6 @@ def demo_basic_rag():
         search_type="similarity",
         search_kwargs={"k": 2},
     )
-
-    # initialize the llm
-    llm = init_chat_model(model="gpt-4o-mini", model_provider="openai", temperature=0.7)
 
     # RAG Prompt Template
     prompt = ChatPromptTemplate.from_template("""
@@ -148,5 +155,37 @@ def demo_basic_rag():
         print(f"Question: {question}\nAnswer: {answer}\n")
 
 
+def demo_rag_with_sources():
+    """Demonstrates the RAG pipeline with sources."""
+
+    vectorstore = create_kb()
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+    prompt = ChatPromptTemplate.from_template("""
+        Answer the question based only on the following context. Include with sources you used to answer the question.
+        Context: {context}
+        Question: {question}
+
+        Answer (include sources):
+
+    """)
+
+    rag_chain = (
+        {
+            "context": retriever | format_docs_with_sources,
+            "question": RunnablePassthrough(),
+        }
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    print("RAG Chain with Sources:")
+
+    result = rag_chain.invoke("What are the core components of LangChain?")
+    print(f"Answer: {result}\n")
+
+
 if __name__ == "__main__":
-    demo_basic_rag()
+    # demo_basic_rag()
+    demo_rag_with_sources()

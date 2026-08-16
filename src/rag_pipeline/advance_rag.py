@@ -174,4 +174,4 @@ def demo_multi_query_retriever():
 if __name__ == "__main__":
     # demo_parent_document_retriver()
     # demo_contextual_compression()
-    demo_multi_query_retriever()
+    # demo_multi_query_retriever()
