@@ -1,12 +1,29 @@
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
-from langchain_classic.retrievers import ParentDocumentRetriever
+from langchain_classic.retrievers import (
+    ContextualCompressionRetriever,
+    ParentDocumentRetriever,
+)
+from langchain_classic.retrievers.document_compressors import (
+    LLMChainExtractor,
+)
 from langchain_classic.storage import InMemoryStore
-from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
+from langchain_openai.chat_models.base import ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from .sample_docs import INFO_BURIED, TECH_DOCS, long_doc
+
 load_dotenv()
+
+
+def create_base_vectorstore():
+    """Creates and returns a base vector store using Chroma and OpenAI embeddings."""
+    vectorstore = Chroma.from_documents(
+        documents=INFO_BURIED,
+        embedding=OpenAIEmbeddings(model="text-embedding-3-small"),
+    )
+    return vectorstore
 
 
 def demo_parent_document_retriver():
@@ -16,45 +33,6 @@ def demo_parent_document_retriver():
     print("PARENT DOCUMENT RETRIEVER")
     print("Small chunks for precise search, large chunks for context")
     print("=" * 60)
-
-    # Long document to demonstrate parent/child splitting
-    long_doc = Document(
-        page_content="""
-    # Complete Guide to Building AI Agents
-
-    ## Chapter 1: Introduction to AI Agents
-
-    AI agents are autonomous systems that can perceive their environment, make decisions, and take actions to achieve goals. Unlike simple chatbots, agents can use tools, maintain state, and execute multi-step plans.
-
-    The key components of an AI agent include:
-    - A language model for reasoning
-    - Tools for interacting with external systems
-    - Memory for maintaining context
-    - A planning mechanism for complex tasks
-
-    ## Chapter 2: Agent Frameworks
-
-    Several frameworks exist for building AI agents:
-
-    LangChain provides the foundational abstractions for chains and simple agents. It excels at straightforward tool-calling patterns and integrates with many LLM providers.
-
-    LangGraph extends LangChain for complex, stateful agents. It introduces graph-based state management, enabling cycles, human-in-the-loop workflows, and persistent execution.
-
-    CrewAI focuses on multi-agent collaboration, allowing teams of specialized agents to work together on complex tasks.
-
-    ## Chapter 3: Production Considerations
-
-    Deploying agents to production requires careful attention to:
-    - Error handling and fallbacks
-    - Token usage optimization
-    - Observability and tracing
-    - Security and access control
-    - State persistence and recovery
-
-    LangSmith provides observability for LangChain/LangGraph applications, offering tracing, evaluation, and monitoring capabilities.
-            """,
-        metadata={"source": "ai_agents_guide.md"},
-    )
 
     # Splitters
     parent_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
@@ -96,5 +74,56 @@ def demo_parent_document_retriver():
     print(f"Content preview: {parent_docs[0].page_content[:300]}...")
 
 
+def demo_contextual_compression():
+    """Contextual compression extracts only the relevant context from the retrieved documents."""
+    """
+    benefits:
+    - token usage
+    - better llm responses by reducing distracts from other context
+    - faster processing
+    tradeoffs:
+    - extra calls to the llm for completion. (this will be useful when we have a large number of documents to compress)
+    """
+
+    print("=" * 80)
+    print("CONTEXTUAL COMPRESSION RETRIEVER")
+    print("=" * 80)
+
+    # Vector store and llm
+    vectorstore = create_base_vectorstore()
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+
+    # Create compressor
+    compressor = LLMChainExtractor.from_llm(llm)
+
+    # Create contextual compression retriever
+    contextual_compression_retriever = ContextualCompressionRetriever(
+        base_compressor=compressor,
+        base_retriever=retriever,
+    )
+
+    # Query
+    query = "What frameworks exist for building LLM applications?"
+
+    print(f"\n--- Query ---")
+    print(f"Content: {query}")
+
+    # Search with contextual compression
+    compressed_docs = contextual_compression_retriever.invoke(query)
+    print(f"\n--- Compressed Chunk (what search found) ---")
+    for doc in compressed_docs:
+        print(f"Length: {len(doc.page_content)} chars")
+        print(f"Content preview: {doc.page_content}...")
+
+    # search without compression using vector store retriever
+    base_docs = vectorstore.as_retriever(search_kwargs={"k": 2}).invoke(query)
+    print(f"\n--- Without Compression (what search found) ---")
+    for doc in base_docs:
+        print(f"Length: {len(doc.page_content)} chars")
+        print(f"Content preview: {doc.page_content[:150]}...")
+
+
 if __name__ == "__main__":
-    demo_parent_document_retriver()
+    # demo_parent_document_retriver()
+    demo_contextual_compression()
