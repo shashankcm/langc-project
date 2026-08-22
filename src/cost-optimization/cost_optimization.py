@@ -100,12 +100,6 @@ def demo_token_budgeting() -> None:
     print(f"\nUsage: {llm.get_stats()}")
 
 
-# Production version would:
-# 1. Embed the query into a vector
-# 2. Search the cache by vector similarity
-# 3. Return if similarity > threshold (e.g., 0.95)
-
-
 # === Semantic Caching ===
 
 
@@ -214,3 +208,8 @@ def demo_caching():
 if __name__ == "__main__":
     # demo_token_budgeting()
     demo_caching()
+
+# Production version would:
+# 1. Embed the query into a vector
+# 2. Search the cache by vector similarity
+# 3. Return if similarity > threshold (e.g., 0.95)
