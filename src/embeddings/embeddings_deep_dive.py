@@ -59,7 +59,39 @@ def similarity_search():
         print(f"{rank}. {doc} (similarity: {similarity:.4f})")
 
 
+def embedding_caching():
+    # embedding caching
+    from langchain_classic.embeddings.cache import CacheBackedEmbeddings
+    from langchain_core.stores import InMemoryStore
+
+    store = InMemoryStore()
+
+    cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
+        underlying_embeddings=embeddings,
+        document_embedding_cache=store,
+        namespace="exercise",
+    )
+
+    text = "What is Reinforcement Learning?"
+
+    # First Call
+    print("First Call")
+    first_embedding = cached_embeddings.embed_query(text)
+    print(f"first_embedding: {len(first_embedding)} documents\n")
+
+    # Second Call
+    print("Second Call")
+    second_embedding = cached_embeddings.embed_query(text)
+    print(f"second_embedding: {len(second_embedding)} documents\n")
+
+    # Compare embeddings
+    print(
+        f"First embedding == Second embedding: {np.allclose(first_embedding, second_embedding)}\n"
+    )
+
+
 if __name__ == "__main__":
     # basic_embedding()
     # batch_embedding()
-    similarity_search()
+    # similarity_search()
+    embedding_caching()
