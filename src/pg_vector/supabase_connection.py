@@ -49,8 +49,8 @@ def verify_connection(vectorstore) -> bool:
         else:
             print("No results found")
 
-        vectorstore.delete([ids[0]])
-        print("Cleanup: test document deleted")
+        # vectorstore.delete([ids[0]])
+        # print("Cleanup: test document deleted")
         return True
 
     except Exception as e:
