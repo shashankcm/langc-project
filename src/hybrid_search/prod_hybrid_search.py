@@ -60,18 +60,25 @@ documents = [
 class HybridSearchRetriever:
     """Combines results from multiple retrievers (Vector and BM25) using Reciprocal Rank Fusion (RRF)."""
 
-    def __init__(self, documents: list[Document], bm25_weight: float = 0.5, k: int = 4):
+    def __init__(
+        self,
+        documents: list[Document],
+        bm25_weight: float = 0.5,
+        k: int = 4,
+        embeddings=None,
+        collection_name: str = "hybrid_search",
+    ):
         self.k = k
         self.documents = documents
         self.bm25_weight = bm25_weight
         self.vector_weight = 1 - bm25_weight
 
-        # Step 1: Initialize embeddings
-        self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+        # Step 1: Initialize embeddings (OpenAI unless the caller passes its own, e.g. in tests)
+        self.embeddings = embeddings or OpenAIEmbeddings(model="text-embedding-3-small")
 
         # Step 2: Initialize the vector store
         self.vectorstore = Chroma.from_documents(
-            documents, self.embeddings, collection_name="hybrid_search"
+            documents, self.embeddings, collection_name=collection_name
         )
 
         # Step 3: Initialize the retrievers
@@ -88,16 +95,6 @@ class HybridSearchRetriever:
             retrievers=[self.bm25_retriever, self.vectorstore_retriever],
             weights=[self.bm25_weight, self.vector_weight],
         )
-
-    """ # FIXED: Shifted left out of __init__ scope to become standard instance methods
-    def search(self, query: str) -> list[Document]:
-        '''Run Hybrid search using weighted reciprocal rank fusion.'''
-        return reciprocal_rank_fusion(
-            query,
-            retrievers=[self.bm25_retriever, self.vectorstore_retriever],
-            weights=[self.bm25_weight, self.vector_weight],
-            k=self.k,
-        ) """
 
     def search(self, query: str) -> list[Document]:
         """Run Hybrid search using LangChain's native RRF executor."""
@@ -128,29 +125,35 @@ class HybridSearchRetriever:
         ]
 
 
-# Step 5: Validate the retriever
-retriever = HybridSearchRetriever(documents, bm25_weight=0.5, k=4)
-print("Hybrid search retriever initialized successfully.\n")
-# Step 6: Define some completely new runtime data
-new_incoming_docs = [
-    Document(
-        page_content="Database maintenance window is scheduled every Sunday at 2 AM EST.",
-        metadata={"type": "ops"},
-    ),
-    Document(
-        page_content="To patch the firmware on SKU-7742X, upload the binary via the admin console.",
-        metadata={"type": "maintenance"},
-    ),
-]
+def run_demo() -> None:
+    """Build the retriever on the sample documents, add new ones, and print a search."""
+    # Step 5: Validate the retriever
+    retriever = HybridSearchRetriever(documents, bm25_weight=0.5, k=4)
+    print("Hybrid search retriever initialized successfully.\n")
+    # Step 6: Define some completely new runtime data
+    new_incoming_docs = [
+        Document(
+            page_content="Database maintenance window is scheduled every Sunday at 2 AM EST.",
+            metadata={"type": "ops"},
+        ),
+        Document(
+            page_content="To patch the firmware on SKU-7742X, upload the binary via the admin console.",
+            metadata={"type": "maintenance"},
+        ),
+    ]
 
-# Step 7: Adding new documents to hybrid indexing pipelines
-print("Adding new documents to hybrid indexing pipelines...")
-retriever.add_documents(new_incoming_docs)
+    # Step 7: Adding new documents to hybrid indexing pipelines
+    print("Adding new documents to hybrid indexing pipelines...")
+    retriever.add_documents(new_incoming_docs)
 
-# Step 8: Search with the updated retriever
-print("\nSearching with updated retriever...")
-results = retriever.search("SKU-7742X specifications")
+    # Step 8: Search with the updated retriever
+    print("\nSearching with updated retriever...")
+    results = retriever.search("SKU-7742X specifications")
 
-print("--- Query Results ---")
-for doc in results:
-    print(f"[{doc.metadata.get('type', 'None')}] -> {doc.page_content[:120]}")
+    print("--- Query Results ---")
+    for doc in results:
+        print(f"[{doc.metadata.get('type', 'None')}] -> {doc.page_content[:120]}")
+
+
+if __name__ == "__main__":
+    run_demo()

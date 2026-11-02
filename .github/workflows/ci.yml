@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      # Installs exactly what uv.lock records, with the Python version in .python-version.
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      # The hybrid search tests use a deterministic embedder and need no API key.
+      - name: Run tests
+        run: uv run pytest -q

@@ -1,0 +1,467 @@
+{
+ "source": "kube-rag evals/golden_v2.json at commit 4100749",
+ "questions": [
+  {
+   "id": "Q001",
+   "question": "What storage service does the work queue example use to hold the queue?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q002",
+   "question": "What is the name of the queue that is filled with tasks in the work queue example?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q003",
+   "question": "Which fruits are pushed onto the job2 queue?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q004",
+   "question": "How do workers signal that the queue is empty?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q005",
+   "question": "What parallelism does the work queue Job manifest set?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q006",
+   "question": "Which command waits up to 300 seconds for the work queue Job to complete?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q007",
+   "question": "What does the work queue guide suggest for a continuous stream of background work?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q008",
+   "question": "How long is the lease the worker takes on a queue item?",
+   "gold_sources": [
+    "parallel_work_queue.txt"
+   ]
+  },
+  {
+   "id": "Q009",
+   "question": "Which three tools does the Databricks guide compare for managing jobs programmatically?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q010",
+   "question": "Which languages are the Databricks SDKs available for?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q011",
+   "question": "Which REST API request does the command databricks jobs get map to?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q012",
+   "question": "How many ways are there to run a Databricks job from the command line?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q013",
+   "question": "What happens to a Databricks job started with the submit command?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q014",
+   "question": "Which CLI command deletes a Databricks job?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q015",
+   "question": "What does Databricks recommend for managing jobs as part of CI/CD?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q016",
+   "question": "Which environment variables does the Databricks REST API example assume are set?",
+   "gold_sources": [
+    "job_management.html"
+   ]
+  },
+  {
+   "id": "Q017",
+   "question": "Which tool does the job monitoring tutorial use to run a local Kubernetes cluster?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q018",
+   "question": "What does a backoffLimit of 4 mean for hello-job?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q019",
+   "question": "What does the COMPLETIONS column show in kubectl get jobs?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q020",
+   "question": "Which statuses can a Kubernetes job have according to the tutorial?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q021",
+   "question": "How do you follow a job pod's logs in real time?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q022",
+   "question": "How do you list only the pods that belong to the job hello-job?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q023",
+   "question": "How do you read the number of succeeded pods for labeled-job with JSONPath?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q024",
+   "question": "How do you filter jobs by both the department and environment labels?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q025",
+   "question": "What schedule does simple-cronjob use?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q026",
+   "question": "Can you read a job's logs after the job has completed?",
+   "gold_sources": [
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q027",
+   "question": "Which Kubernetes version does the architecture overview deck cover?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q028",
+   "question": "How does the architecture deck describe Kubernetes?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q029",
+   "question": "Which Google systems informed the design of Kubernetes?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q030",
+   "question": "Which master components does the deck list?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q031",
+   "question": "What role does etcd play in the cluster?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q032",
+   "question": "What does kube-proxy do?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q033",
+   "question": "What do the Kubernetes networking fundamental rules say about NAT?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q034",
+   "question": "How many major Service types are there?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q035",
+   "question": "Which Service type exposes a service only on a cluster-internal IP?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q036",
+   "question": "What is a DaemonSet used for?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q037",
+   "question": "How are StatefulSet pods named?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q038",
+   "question": "Which Job fields control the number of pod executions and parallelism?",
+   "gold_sources": [
+    "architecture.pptx",
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q039",
+   "question": "Are Jobs and their Pods cleaned up automatically after completion?",
+   "gold_sources": [
+    "architecture.pptx",
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q040",
+   "question": "How do Secrets differ from ConfigMaps?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q041",
+   "question": "What does the pause container do for a Pod?",
+   "gold_sources": [
+    "architecture.pptx"
+   ]
+  },
+  {
+   "id": "Q042",
+   "question": "What must be installed before testing HPA and VPA?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q043",
+   "question": "What does the Horizontal Pod Autoscaler do?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q044",
+   "question": "What replica range and CPU target does the example HPA use?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q045",
+   "question": "Which command generates load to test the HPA?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q046",
+   "question": "What does the Vertical Pod Autoscaler adjust?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q047",
+   "question": "Which script installs the Vertical Pod Autoscaler?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q048",
+   "question": "Which updateMode options does VPA support?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q049",
+   "question": "What does VPA updateMode Off do?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q050",
+   "question": "What minAllowed and maxAllowed CPU does the example VPA set?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q051",
+   "question": "Which repository is cloned to install VPA?",
+   "gold_sources": [
+    "pods_autoscale.html"
+   ]
+  },
+  {
+   "id": "Q052",
+   "question": "Which restart policy is not allowed for Jobs and why?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q053",
+   "question": "Can a Job's Pod template be changed after the Job is created?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q054",
+   "question": "What does completions: 5 mean for a Job?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q055",
+   "question": "What does Indexed completion mode give each Pod?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q056",
+   "question": "What is a CronJob?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q057",
+   "question": "Which cron expression runs a job daily at 2:30 AM?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q058",
+   "question": "Which CronJob field sets the time zone?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q059",
+   "question": "Which concurrencyPolicy does the database backup CronJob use?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q060",
+   "question": "Why is the cron schedule '60 * * * *' invalid?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q061",
+   "question": "Which Prometheus alert fires when a CronJob has not run in over an hour?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q062",
+   "question": "Which security context setting stops a job container gaining extra privileges?",
+   "gold_sources": [
+    "cronjobs.docx"
+   ]
+  },
+  {
+   "id": "Q063",
+   "question": "What is a Kubernetes Job?",
+   "gold_sources": [
+    "architecture.pptx",
+    "cronjobs.docx",
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q064",
+   "question": "Which field limits how many times a failing Job is retried?",
+   "gold_sources": [
+    "cronjobs.docx",
+    "monitor_job.docx"
+   ]
+  },
+  {
+   "id": "Q065",
+   "question": "How can a Job run its pods in parallel?",
+   "gold_sources": [
+    "architecture.pptx",
+    "cronjobs.docx",
+    "parallel_work_queue.txt"
+   ]
+  }
+ ]
+}

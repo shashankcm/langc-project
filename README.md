@@ -53,6 +53,8 @@ Most demos call paid APIs, so they cost a little to run.
 
 ## Honest status
 
-- These are teaching and prototyping examples. There are no automated tests and no retrieval-quality numbers in this repository.
+- Most modules are teaching and prototyping examples on a small sample corpus. Only the hybrid search module is tested and measured.
+- Tests: `uv run pytest` runs 18 offline tests of the hybrid search module, with no API key. GitHub Actions runs them on every push.
+- Measurement: `uv run python -m hybrid_search.run_comparison` compares dense-only and hybrid retrieval on 65 questions from the kube-rag golden set. Result: no reliable gain (MRR@5 +0.037, 95% interval −0.034 to +0.110; hit@5 unchanged). The embedding model is all-MiniLM-L6-v2, not kube-rag's mpnet, so the numbers are not comparable with kube-rag's. The saved run is in `results/hybrid_vs_dense.json`.
+- The chunking, pipeline and cost-control examples have not been measured.
 - The `pyproject.toml` description is still the template placeholder.
-- The hybrid-search and chunking examples here are prototypes of techniques that kube-rag is meant to test against a labelled evaluation set, so treat their behaviour as illustrative until that comparison is done.
